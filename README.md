@@ -6,6 +6,12 @@
 
 # NestJs project setup guideline with bun
 
+## The features.
+1. Authentication and Authorization
+    - User & password authentication
+    - JWT
+    - Role and actions based authorization
+
 ## NestJs
 
 1. Create a new project
@@ -65,4 +71,48 @@ $ nest g resource resource_name
 
 ```
 
-## Test with Vite
+7. Start local postgres database in Docker
+```bash
+# First time initialization
+$ docker compose up dev-db -d
+
+# Remove the container
+$ docker compose down
+
+# Start container
+$ docker compose start
+
+# Stop container
+$ docker compose stop
+
+# Stop with specific service
+$ docker compose stop myservicename
+
+# Remove the specific service
+$ docker compose rm -f myservicename
+
+```
+
+8. Prisma migration
+```bash
+# list all options
+$ npx prisma
+
+# migration manual
+$ npx prisma migrate --help
+
+# Run dev migration from changes in Prisma schema, apply it to the database
+# trigger generators (e.g. Prisma Client)
+$ npx prisma migrate dev
+
+# Deploy the pending migrations to the database
+$ npx prisma migrate deploy
+
+# Push the Prisma schema state to the database
+$ prisma db push
+```
+
+## List of dendencies
+1. Prisma for ORM
+2. Zod for validation
+3. Docker for development and deployment

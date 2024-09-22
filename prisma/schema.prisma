@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdById String?
+  createdBy   User?   @relation("createdBy", fields: [createdById], references: [id])
+
+  updatedById String?
+  updatedBy   User?   @relation("updatedBy", fields: [updatedById], references: [id])
+
+  createdUsers User[] @relation("createdBy")
+  updatedUsers User[] @relation("updatedBy")
+
+  roleId Int
+  role   Role @relation(fields: [roleId], references: [id])
+
+  userCreatedRoleBy Role[] @relation("userCreatedRoleBy")
+  userUpdatedRoleBy Role[] @relation("userUpdatedRoleBy")
+
+  userCreatedActionBy Action[]   @relation("userCreatedActionBy")
+  userUpdatedActionBy Action[]   @relation("userUpdatedActionBy")
+
+  userCreatedBookmarkBy Bookmark[] @relation("userCreatedBookmarkBy")
+  userUpdatedBookmarkBy Bookmark[] @relation("userUpdatedBookmarkBy")
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  actionsIds  Int[]
+  actions     Action[]
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   User?     @relation("userCreatedRoleBy", fields: [createdById], references: [id])
+  createdById String?
+
+  updatedBy   User?   @relation("userUpdatedRoleBy", fields: [updatedById], references: [id])
+  updatedById String?
+}
+
+model Action {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  description String?
+  Role      Role[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy   User?   @relation("userCreatedActionBy", fields: [createdById], references: [id])
+  createdById String?
+
+  updatedBy   User?    @relation("userUpdatedActionBy", fields: [updatedById], references: [id])
+  updatedById String?
+}
+
+model Bookmark {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  link        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdById String
+  createdBy   User   @relation("userCreatedBookmarkBy", fields: [createdById], references: [id])
+
+  updatedById String
+  updatedBy   User   @relation("userUpdatedBookmarkBy", fields: [updatedById], references: [id])
+}
