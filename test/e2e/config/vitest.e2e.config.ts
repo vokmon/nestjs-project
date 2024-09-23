@@ -17,7 +17,7 @@ export default defineConfig({
     environment: 'node',
     include: ['**/*.e2e-spec.ts'],
     alias: {
-      '@src': './src',
+      '@src': '../../src',
       '@test': './test',
     },
     coverage: {
@@ -31,7 +31,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@src': './src',
+      '@src': '../../src',
       '@test': './test',
     },
   },

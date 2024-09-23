@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from '../../../src/app.controller';
-import { AppService } from '../../../src/app.service';
+import { AppController } from '@src/app.controller';
+import { AppService } from '@src/app.service';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -17,8 +17,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return "The server is running."', () => {
+      expect(appController.getServerStatus()).toBe('The server is running.');
     });
   });
 });
