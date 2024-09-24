@@ -6,6 +6,8 @@ export const userSignupSchema = z
     password: z.string().min(6),
     firstName: z.string().optional(),
     lastName: z.string().optional(),
+    createdByUserId: z.string().uuid().optional(),
+    updatedByUserId: z.string().uuid().optional(),
   })
   .strict();
 
@@ -16,5 +18,5 @@ export const userSigninSchema = userSignupSchema
   })
   .strict();
 
-export type UserSignupSchema = z.infer<typeof userSignupSchema>;
-export type UserSigninSchema = z.infer<typeof userSigninSchema>;
+export type UserSignupDto = z.infer<typeof userSignupSchema>;
+export type UserSigninDto = z.infer<typeof userSigninSchema>;

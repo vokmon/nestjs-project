@@ -12,6 +12,10 @@
     - JWT
     - Role and actions based authorization
 
+2. Default user for setting up
+    - System user: system@system.com / Sy$t3m
+    - Admin user: admin@system.com / Admin$
+    
 ## NestJs
 
 1. Create a new project
