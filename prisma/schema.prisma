@@ -31,29 +31,29 @@ model User {
   createdUsers User[] @relation("createdBy")
   updatedUsers User[] @relation("updatedBy")
 
-  roleId Int
-  role   Role @relation(fields: [roleId], references: [id])
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
 
   userCreatedRoleBy Role[] @relation("userCreatedRoleBy")
   userUpdatedRoleBy Role[] @relation("userUpdatedRoleBy")
 
-  userCreatedActionBy Action[]   @relation("userCreatedActionBy")
-  userUpdatedActionBy Action[]   @relation("userUpdatedActionBy")
+  userCreatedActionBy Action[] @relation("userCreatedActionBy")
+  userUpdatedActionBy Action[] @relation("userUpdatedActionBy")
 
   userCreatedBookmarkBy Bookmark[] @relation("userCreatedBookmarkBy")
   userUpdatedBookmarkBy Bookmark[] @relation("userUpdatedBookmarkBy")
 }
 
 model Role {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   name        String   @unique
   description String?
-  actionsIds  Int[]
+  actionsIds  String[]
   actions     Action[]
   users       User[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  createdBy   User?     @relation("userCreatedRoleBy", fields: [createdById], references: [id])
+  createdBy   User?    @relation("userCreatedRoleBy", fields: [createdById], references: [id])
   createdById String?
 
   updatedBy   User?   @relation("userUpdatedRoleBy", fields: [updatedById], references: [id])
@@ -61,17 +61,17 @@ model Role {
 }
 
 model Action {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
+  id          String   @id @default(uuid())
+  name        String   @unique
   description String?
-  Role      Role[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  Role        Role[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   createdBy   User?   @relation("userCreatedActionBy", fields: [createdById], references: [id])
   createdById String?
 
-  updatedBy   User?    @relation("userUpdatedActionBy", fields: [updatedById], references: [id])
+  updatedBy   User?   @relation("userUpdatedActionBy", fields: [updatedById], references: [id])
   updatedById String?
 }
 

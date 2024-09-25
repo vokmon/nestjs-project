@@ -13,8 +13,8 @@
     - Role and actions based authorization
 
 2. Default user for setting up
-    - System user: system@system.com / Sy$t3m
-    - Admin user: admin@system.com / Admin$
+    - System user: defined in the env INITIAL_SYSTEM_USER / INITIAL_SYSTEM_PASSWORD
+    - Admin user: INITIAL_ADMIN_USER / INITIAL_ADMIN_PASSWORD
     
 ## NestJs
 

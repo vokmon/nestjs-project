@@ -3,8 +3,8 @@ import * as argon from 'argon2';
 import { DatasourceService } from '../datasource/datasource.service';
 import { UserSigninDto, UserSignupDto } from './auth.dto';
 import { Prisma } from '@prisma/client';
+import { ROLE_ID_USER } from '@src/permissions/roles';
 
-const DEFAULT_ROLE = 2; // user role
 @Injectable()
 export class AuthService {
   constructor(private datasourceService: DatasourceService) {}
@@ -22,7 +22,7 @@ export class AuthService {
           password: hash,
           firstName: userSignupDto.firstName,
           lastName: userSignupDto.lastName,
-          roleId: DEFAULT_ROLE,
+          roleId: ROLE_ID_USER,
           createdById: userSignupDto.createdByUserId,
           updatedById: userSignupDto.updatedByUserId,
         },
