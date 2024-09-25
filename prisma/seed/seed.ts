@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as argon from 'argon2';
-import { adminUser, systemUser } from './data/users';
+import { adminUser, systemUser } from '../../src/permissions/users';
 import { ALL_ACTIONS } from '@src/permissions/actions';
 import { ALL_ROLES } from '@src/permissions/roles';
 
@@ -45,7 +45,7 @@ async function addUsers() {
     await shouldIncludeUser(
       process.env.INITIAL_SYSTEM_USER,
       process.env.INITIAL_SYSTEM_PASSWORD,
-      adminUser,
+      systemUser,
     ),
   );
 
@@ -53,20 +53,14 @@ async function addUsers() {
     await shouldIncludeUser(
       process.env.INITIAL_ADMIN_USER,
       process.env.INITIAL_ADMIN_PASSWORD,
-      systemUser,
+      adminUser,
     ),
   );
 
   for (const user of users) {
     if (user) {
       await prisma.user.create({
-        data: {
-          email: user.email,
-          password: user.password,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          roleId: user.roleId,
-        },
+        data: user,
       });
     }
   }
