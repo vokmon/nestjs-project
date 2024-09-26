@@ -26,6 +26,10 @@ export default defineConfig({
         ...configDefaults.coverage.exclude,
         '**/*.module.ts',
         '**/main.ts',
+        '**/prisma/seed',
+        '**/src/permissions',
+        '**/src/pipes', // pipes does not trigger in the unit test environment
+        '**/src/datasource', // exclude datasource as unit tests wll always use mock data
       ],
     },
   },

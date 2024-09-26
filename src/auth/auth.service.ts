@@ -67,6 +67,7 @@ export class AuthService {
         lastName: true,
         role: {
           select: {
+            id: true,
             description: true,
             name: true,
             actionsIds: true,

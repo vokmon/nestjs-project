@@ -26,6 +26,8 @@ export default defineConfig({
         ...configDefaults.coverage.exclude,
         '**/*.module.ts',
         '**/main.ts',
+        '**/prisma/seed',
+        '**/src/permissions',
       ],
     },
   },

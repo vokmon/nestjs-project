@@ -80,6 +80,19 @@ describe('AuthController', () => {
     }).rejects.toThrowError(`The email is already taken.`);
   });
 
+  it('should signup failed because an error occurs', async () => {
+    datasourceMockService.user.create.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError('Error', {
+        code: 'P2003',
+        clientVersion: '1',
+      }),
+    );
+
+    expect(async () => {
+      await controller.signup(userWithNormalRole);
+    }).rejects.toThrowError(`Error`);
+  });
+
   it('should signin successfully', async () => {
     vi.spyOn(argon, 'verify').mockResolvedValueOnce(true);
 

@@ -1,4 +1,11 @@
-import { Body, Controller, Post, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UsePipes,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe';
 import {
@@ -19,6 +26,7 @@ export class AuthController {
   }
 
   @Post('signin')
+  @HttpCode(HttpStatus.OK)
   @UsePipes(new ZodValidationPipe(userSigninSchema))
   signin(@Body() userSigninDto: UserSigninDto) {
     return this.authService.signin(userSigninDto);
