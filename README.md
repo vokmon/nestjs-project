@@ -116,6 +116,17 @@ $ npx prisma migrate deploy
 $ prisma db push
 ```
 
+9. Dev scripts
+```bash
+# Manually migrate schema and apply seeding data
+$ bun prisma:dev:deploy
+
+# Remove the dev database, then re-create a new dev database and apply prisma migration script with seeding data
+# CAUTION! All the data will be lost.
+$ bun db:dev:reset
+
+```
+
 ## List of dendencies
 1. Prisma for ORM
 2. Zod for validation

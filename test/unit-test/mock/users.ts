@@ -3,4 +3,5 @@ export const userWithNormalRole = {
   password: 'test123',
   firstName: 'Test',
   lastName: 'Account',
+  role: { actionsIds: ['3', '4'] },
 };

@@ -1,19 +1,27 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import * as argon from 'argon2';
 import { DatasourceService } from '../datasource/datasource.service';
 import { UserSigninDto, UserSignupDto } from './auth.dto';
 import { Prisma } from '@prisma/client';
-import { ROLE_ID_USER } from '@src/permissions/roles';
+import { ROLE_ID_USER } from '../permissions/roles';
+import { Auth } from './auth';
 
 @Injectable()
 export class AuthService {
-  constructor(private datasourceService: DatasourceService) {}
+  constructor(
+    private datasourceService: DatasourceService,
+    private auth: Auth,
+  ) {}
 
   async signup(userSignupDto: UserSignupDto) {
     try {
       // generate the password hash
       const hash = await argon.hash(userSignupDto.password, {
-        secret: Buffer.from(process.env.AUTH_SECRET, 'utf-8'),
+        secret: this.auth.getSecretBufferValue(),
       });
       // save the new user into the db
       const user = await this.datasourceService.user.create({
@@ -46,8 +54,53 @@ export class AuthService {
     }
   }
 
-  signin(userSigninDto: UserSigninDto) {
-    console.log(userSigninDto);
-    return { message: 'I am signed in' };
+  async signin(userSigninDto: UserSigninDto) {
+    // find the user by email
+    const user = await this.datasourceService.user.findUnique({
+      where: {
+        email: userSigninDto.email,
+      },
+      select: {
+        email: true,
+        password: true,
+        firstName: true,
+        lastName: true,
+        role: {
+          select: {
+            description: true,
+            name: true,
+            actionsIds: true,
+            actions: true,
+          },
+        },
+      },
+    });
+
+    // if the user does not exist, throw an error
+    if (!user) {
+      throw new ForbiddenException(`User ${userSigninDto.email} is not found.`);
+    }
+
+    const pwMatches = await argon.verify(
+      user.password,
+      userSigninDto.password,
+      { secret: this.auth.getSecretBufferValue() },
+    );
+    if (!pwMatches) {
+      throw new ForbiddenException(`User ${userSigninDto.email} is not found.`);
+    }
+
+    delete user.password;
+
+    const actions = await this.datasourceService.action.findMany({
+      where: {
+        id: {
+          in: user.role.actionsIds,
+        },
+      },
+    });
+    user.role.actions = actions;
+
+    return user;
   }
 }

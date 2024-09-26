@@ -34,8 +34,7 @@ export const ROLE_ADMIN = {
 export const ROLE_USER = {
   id: ROLE_ID_USER,
   name: 'User',
-  description:
-    'Normal user. No Actions means they can only access their resources',
+  description: 'Normal user with permissions',
   actionsIds: [ACTION_BOOKMARK_READ.id, ACTION_BOOKMARK_WRITE.id],
 };
 

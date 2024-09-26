@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "bun --env-file=.env nest start ",
+    "start": "bun --env-file=.env.dev nest start ",
     "start:dev": "bun start --watch",
     "start:debug": "bun start --debug --watch",
     "start:prod": "node dist/main",
@@ -17,10 +17,15 @@
     "test:watch": "bun test --watch",
     "test:cov": "bun test --coverage",
     "test:e2e": "vitest run -c ./test/e2e/config/vitest.e2e.config.ts",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "prisma:dev:deploy": "prisma migrate deploy && prisma db seed",
+    "db:dev:rm": "docker compose rm  -s -f -v",
+    "db:dev:up": "docker compose up -d",
+    "db:dev:reset": "bun db:dev:rm dev-db && bun db:dev:up dev-db && sleep 2 && bun --env-file=.env.dev prisma:dev:deploy"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.0.0",
