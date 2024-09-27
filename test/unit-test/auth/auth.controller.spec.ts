@@ -11,6 +11,7 @@ import { Auth } from '@src/auth/auth';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '@src/auth/auth.service';
 import { normalUserActions } from '../mock/actions';
+import { JwtService } from '@nestjs/jwt';
 
 // 1- mock prisma module
 vi.mock('../../mock/db/prisma-mock');
@@ -46,6 +47,7 @@ describe('AuthController', () => {
         },
         Auth,
         ConfigService,
+        JwtService,
       ],
     }).compile();
 
@@ -101,7 +103,6 @@ describe('AuthController', () => {
       password: userWithNormalRole.password,
       firstName: userWithNormalRole.firstName,
       lastName: userWithNormalRole.lastName,
-      role: userWithNormalRole.role,
     };
 
     datasourceMockService.user.findUnique.mockResolvedValueOnce(
@@ -112,7 +113,8 @@ describe('AuthController', () => {
       normalUserActions as any,
     );
     const result = await controller.signin(userWithNormalRole);
-    expect(result).toMatchObject(expectedUser);
+    expect(result.access_token).toBeDefined();
+    expect(result.refresh_token).toBeDefined();
   });
 
   it('should signin failed because user is invalid', async () => {

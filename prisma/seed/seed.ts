@@ -3,7 +3,6 @@ import * as argon from 'argon2';
 import { adminUser, systemUser } from '../../src/permissions/users';
 import { ALL_ACTIONS } from '@src/permissions/actions';
 import { ALL_ROLES } from '@src/permissions/roles';
-import { getSecretBufferValue } from '@src/utils/AuthUtils';
 
 const prisma = new PrismaClient();
 
@@ -74,7 +73,7 @@ async function shouldIncludeUser(
 ) {
   if (username && password) {
     const hash = await argon.hash(password, {
-      secret: getSecretBufferValue(),
+      secret: Buffer.from(process.env.AUTH_SECRET, 'utf-8'),
     });
     const user = {
       ...userData,

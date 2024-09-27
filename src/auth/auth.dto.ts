@@ -20,3 +20,16 @@ export const userSigninSchema = userSignupSchema
 
 export type UserSignupDto = z.infer<typeof userSignupSchema>;
 export type UserSigninDto = z.infer<typeof userSigninSchema>;
+
+export type UserDto = {
+  id: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: {
+    id: string;
+    name: string;
+    description: string;
+  };
+};

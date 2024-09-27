@@ -9,12 +9,14 @@ import { UserSigninDto, UserSignupDto } from './auth.dto';
 import { Prisma } from '@prisma/client';
 import { ROLE_ID_USER } from '../permissions/roles';
 import { Auth } from './auth';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private datasourceService: DatasourceService,
     private auth: Auth,
+    private configService: ConfigService,
   ) {}
 
   async signup(userSignupDto: UserSignupDto) {
@@ -54,13 +56,17 @@ export class AuthService {
     }
   }
 
-  async signin(userSigninDto: UserSigninDto) {
+  async signin(userSigninDto: UserSigninDto): Promise<{
+    access_token: string;
+    refresh_token: string;
+  }> {
     // find the user by email
     const user = await this.datasourceService.user.findUnique({
       where: {
         email: userSigninDto.email,
       },
       select: {
+        id: true,
         email: true,
         password: true,
         firstName: true,
@@ -70,8 +76,6 @@ export class AuthService {
             id: true,
             description: true,
             name: true,
-            actionsIds: true,
-            actions: true,
           },
         },
       },
@@ -91,17 +95,24 @@ export class AuthService {
       throw new ForbiddenException(`User ${userSigninDto.email} is not found.`);
     }
 
-    delete user.password;
-
-    const actions = await this.datasourceService.action.findMany({
-      where: {
-        id: {
-          in: user.role.actionsIds,
-        },
-      },
+    const accessTokenPromise = this.auth.signToken(user, {
+      expiresIn: '15m',
+      secret: this.configService.get<string>('ACCESS_JWT_TOKEN_SECRET'),
     });
-    user.role.actions = actions;
 
-    return user;
+    const refreshTokenPromise = this.auth.signToken(user, {
+      expiresIn: '30 days',
+      secret: this.configService.get<string>('REFRESH_JWT_TOKEN_SECRET'),
+    });
+
+    const [accessToken, refreshToken] = await Promise.all([
+      accessTokenPromise,
+      refreshTokenPromise,
+    ]);
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
   }
 }
