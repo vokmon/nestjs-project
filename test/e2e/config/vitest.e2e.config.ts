@@ -17,24 +17,26 @@ export default defineConfig({
     environment: 'node',
     include: ['**/*.e2e-spec.ts'],
     alias: {
-      '@src': '../../src',
-      '@test': './test',
+      '@src': path.resolve(__dirname, '../../../src'),
+      '@test': path.resolve(__dirname, '../../'),
     },
     coverage: {
       provider: 'v8',
       exclude: [
-        ...configDefaults.coverage.exclude,
+        ...(configDefaults.coverage.exclude || []),
         '**/*.module.ts',
         '**/main.ts',
         '**/prisma/seed',
         '**/src/permissions',
+        '**/*.dto.ts',
+        '**/src/pipes', // pipes does not trigger in the unit test environment
+        '**/src/datasource', // exclude datasource as unit tests wll always use mock data
       ],
     },
   },
   resolve: {
     alias: {
-      '@src': '../../src',
-      '@test': './test',
+      '@src': path.resolve(__dirname, '../../../src'),
     },
   },
 

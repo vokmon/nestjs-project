@@ -6,14 +6,16 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { ZodValidationPipe } from '../pipes/zod-validation-pipe';
 import {
+  TokenInformation,
+  tokenInformationSchema,
   UserSigninDto,
   userSigninSchema,
   UserSignupDto,
   userSignupSchema,
 } from './auth.dto';
+import { AuthService } from './auth.service';
+import { ZodValidationPipe } from '@src/pipes/zod-validation-pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -30,5 +32,11 @@ export class AuthController {
   @UsePipes(new ZodValidationPipe(userSigninSchema))
   signin(@Body() userSigninDto: UserSigninDto) {
     return this.authService.signin(userSigninDto);
+  }
+
+  @Post('get-token')
+  @UsePipes(new ZodValidationPipe(tokenInformationSchema))
+  getTokenByRefreshToken(@Body() tokenInformation: TokenInformation) {
+    return this.authService.getTokenByRefreshToken(tokenInformation);
   }
 }

@@ -1,17 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { expect, vi } from 'vitest';
 import * as argon from 'argon2';
-import { AuthController } from '@src/auth/auth.controller';
-import datasourceMockService from '../mock/db/datasource-mock';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { DatasourceModule } from '@src/datasource/datasource.module';
+import { AuthController } from '@src/auth/auth.controller';
 import { DatasourceService } from '@src/datasource/datasource.service';
 import { userWithNormalRole } from '../mock/users';
 import { Prisma } from '@prisma/client';
 import { Auth } from '@src/auth/auth';
-import { ConfigService } from '@nestjs/config';
 import { AuthService } from '@src/auth/auth.service';
-import { normalUserActions } from '../mock/actions';
-import { JwtService } from '@nestjs/jwt';
+import datasourceMockService from '../mock/db/datasource-mock';
 
 // 1- mock prisma module
 vi.mock('../../mock/db/prisma-mock');
@@ -98,20 +97,10 @@ describe('AuthController', () => {
   it('should signin successfully', async () => {
     vi.spyOn(argon, 'verify').mockResolvedValueOnce(true);
 
-    const expectedUser = {
-      email: userWithNormalRole.email,
-      password: userWithNormalRole.password,
-      firstName: userWithNormalRole.firstName,
-      lastName: userWithNormalRole.lastName,
-    };
-
     datasourceMockService.user.findUnique.mockResolvedValueOnce(
-      expectedUser as any,
+      userWithNormalRole as any,
     );
 
-    datasourceMockService.action.findMany.mockResolvedValueOnce(
-      normalUserActions as any,
-    );
     const result = await controller.signin(userWithNormalRole);
     expect(result.access_token).toBeDefined();
     expect(result.refresh_token).toBeDefined();
@@ -144,5 +133,52 @@ describe('AuthController', () => {
     expect(async () => {
       await controller.signin(userWithNormalRole);
     }).rejects.toThrowError(`User ${userWithNormalRole.email} is not found.`);
+  });
+
+  const signInWithNormalUser = async () => {
+    vi.spyOn(argon, 'verify').mockResolvedValueOnce(true);
+
+    datasourceMockService.user.findUnique.mockResolvedValueOnce(
+      userWithNormalRole as any,
+    );
+
+    return controller.signin(userWithNormalRole);
+  };
+  it('should get new token with refresh token successfully', async () => {
+    const signInTokens = await signInWithNormalUser();
+    datasourceMockService.user.findUnique.mockResolvedValueOnce(
+      userWithNormalRole as any,
+    );
+    const result = await controller.getTokenByRefreshToken(signInTokens);
+    expect(result.access_token).toBeDefined();
+    expect(result.refresh_token).toBeDefined();
+  });
+
+  it('should get new token with refresh token failed because user is invalid', async () => {
+    const signInTokens = await signInWithNormalUser();
+
+    expect(async () => {
+      await controller.getTokenByRefreshToken(signInTokens);
+    }).rejects.toThrowError(`User ${userWithNormalRole.email} is not found.`);
+  });
+
+  it('should get new token with refresh token failed because access token is invalid', async () => {
+    expect(async () => {
+      await controller.getTokenByRefreshToken({
+        access_token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxeyJzdWIiOiIwNjFjNWU2My05ZDJkLTQ2MTctYTJiMC0zMzUzNWRmYWJhMjYiLCJlbWFpbCI6InVzZXIxQHRlc3QuY29tIiwibmFtZSI6IlRlc3QiLCJmYW1pbHlfbmFtZSI6IkFjY291bnQiLCJyb2xlIjoiMiIsImlhdCI6MTcyNzQ5NTY2MCwiZXhwIjoxNzI3NDk2NTYwfQ.jGN148W0dh5wdPMGGukhNHqIduP72UWocJecVjC7tYQ',
+        refresh_token: 'refresh_token',
+      });
+    }).rejects.toThrowError(`Invalid access token`);
+  });
+
+  it('should get new token with refresh token failed because refresh token is invalid', async () => {
+    expect(async () => {
+      await controller.getTokenByRefreshToken({
+        access_token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNjFjNWU2My05ZDJkLTQ2MTctYTJiMC0zMzUzNWRmYWJhMjYiLCJlbWFpbCI6InVzZXIxQHRlc3QuY29tIiwibmFtZSI6IlRlc3QiLCJmYW1pbHlfbmFtZSI6IkFjY291bnQiLCJyb2xlIjoiMiIsImlhdCI6MTcyNzQ5NTY2MCwiZXhwIjoxNzI3NDk2NTYwfQ.jGN148W0dh5wdPMGGukhNHqIduP72UWocJecVjC7tYQ',
+        refresh_token: 'refresh_token',
+      });
+    }).rejects.toThrowError(`Invalid refresh token`);
   });
 });

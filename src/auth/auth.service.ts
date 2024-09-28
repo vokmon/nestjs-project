@@ -4,12 +4,17 @@ import {
   Injectable,
 } from '@nestjs/common';
 import * as argon from 'argon2';
-import { DatasourceService } from '../datasource/datasource.service';
-import { UserSigninDto, UserSignupDto } from './auth.dto';
-import { Prisma } from '@prisma/client';
-import { ROLE_ID_USER } from '../permissions/roles';
-import { Auth } from './auth';
 import { ConfigService } from '@nestjs/config';
+import { DatasourceService } from '../datasource/datasource.service';
+import {
+  TokenInformation,
+  UserDto,
+  UserSigninDto,
+  UserSignupDto,
+} from './auth.dto';
+import { Prisma } from '@prisma/client';
+import { ROLE_ID_USER } from '@src/permissions/roles';
+import { Auth } from './auth';
 
 @Injectable()
 export class AuthService {
@@ -56,14 +61,39 @@ export class AuthService {
     }
   }
 
-  async signin(userSigninDto: UserSigninDto): Promise<{
-    access_token: string;
-    refresh_token: string;
-  }> {
+  async signin(userSigninDto: UserSigninDto): Promise<TokenInformation> {
     // find the user by email
-    const user = await this.datasourceService.user.findUnique({
+    const user = await this.getUserByEmail(userSigninDto.email);
+    // if the user does not exist, throw an error
+    if (!user) {
+      throw new ForbiddenException(`User ${userSigninDto.email} is not found.`);
+    }
+
+    const pwMatches = await argon.verify(
+      user.password,
+      userSigninDto.password,
+      { secret: this.auth.getSecretBufferValue() },
+    );
+    if (!pwMatches) {
+      throw new ForbiddenException(`User ${userSigninDto.email} is not found.`);
+    }
+    return await this.generateTokens(user);
+  }
+
+  async getTokenByRefreshToken(tokenInformation: TokenInformation) {
+    const payload = this.auth.verifyTokenInformation(tokenInformation);
+    const user = await this.getUserByEmail(payload.email);
+    // if the user does not exist, throw an error
+    if (!user) {
+      throw new ForbiddenException(`User ${payload.email} is not found.`);
+    }
+    return await this.generateTokens(user);
+  }
+
+  private getUserByEmail(email: string) {
+    return this.datasourceService.user.findUnique({
       where: {
-        email: userSigninDto.email,
+        email: email,
       },
       select: {
         id: true,
@@ -80,29 +110,17 @@ export class AuthService {
         },
       },
     });
+  }
 
-    // if the user does not exist, throw an error
-    if (!user) {
-      throw new ForbiddenException(`User ${userSigninDto.email} is not found.`);
-    }
-
-    const pwMatches = await argon.verify(
-      user.password,
-      userSigninDto.password,
-      { secret: this.auth.getSecretBufferValue() },
-    );
-    if (!pwMatches) {
-      throw new ForbiddenException(`User ${userSigninDto.email} is not found.`);
-    }
-
+  private async generateTokens(user: UserDto) {
     const accessTokenPromise = this.auth.signToken(user, {
-      expiresIn: '15m',
-      secret: this.configService.get<string>('ACCESS_JWT_TOKEN_SECRET'),
+      expiresIn: this.configService.get('ACCESS_JWT_TOKEN_EXPIRES_IN'),
+      secret: this.auth.getAuthSecretToken(),
     });
 
     const refreshTokenPromise = this.auth.signToken(user, {
-      expiresIn: '30 days',
-      secret: this.configService.get<string>('REFRESH_JWT_TOKEN_SECRET'),
+      expiresIn: this.configService.get('REFRESH_JWT_TOKEN_EXPIRES_IN'),
+      secret: this.auth.getRefreshSecretToken(),
     });
 
     const [accessToken, refreshToken] = await Promise.all([

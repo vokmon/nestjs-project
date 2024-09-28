@@ -28,8 +28,25 @@ export type UserDto = {
   firstName: string;
   lastName: string;
   role: {
-    id: string;
+    id?: string;
     name: string;
     description: string;
   };
 };
+
+export type AuthPayload = {
+  sub: string;
+  email: string;
+  name: string;
+  family_name: string;
+  role?: string;
+};
+
+export const tokenInformationSchema = z
+  .object({
+    access_token: z.string(),
+    refresh_token: z.string(),
+  })
+  .strict();
+
+export type TokenInformation = z.infer<typeof tokenInformationSchema>;
