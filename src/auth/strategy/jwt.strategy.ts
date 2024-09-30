@@ -4,7 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { DatasourceService } from '@src/datasource/datasource.service';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthPayload } from '../auth.dto';
-import { JwtResultPayload } from './jwt.dto';
+import { JwtValidationResultPayload } from './jwt.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: AuthPayload): Promise<JwtResultPayload> {
+  async validate(payload: AuthPayload): Promise<JwtValidationResultPayload> {
     // This data will be passed into the request object
     const user = await this.datasourceService.user.findUnique({
       where: {

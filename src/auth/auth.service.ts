@@ -77,7 +77,7 @@ export class AuthService {
     if (!pwMatches) {
       throw new ForbiddenException(`User ${userSigninDto.email} is not found.`);
     }
-    return await this.generateTokens(user);
+    return await this.generateTokens(user as UserDto);
   }
 
   async getTokenByRefreshToken(tokenInformation: TokenInformation) {
@@ -87,7 +87,7 @@ export class AuthService {
     if (!user) {
       throw new ForbiddenException(`User ${payload.email} is not found.`);
     }
-    return await this.generateTokens(user);
+    return await this.generateTokens(user as UserDto);
   }
 
   private getUserByEmail(email: string) {

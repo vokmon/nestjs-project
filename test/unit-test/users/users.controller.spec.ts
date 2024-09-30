@@ -1,20 +1,51 @@
+import { expect, vi } from 'vitest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DatasourceModule } from '@src/datasource/datasource.module';
 import { UsersController } from '@src/users/users.controller';
 import { UsersService } from '@src/users/users.service';
+import { userWithNormalRole } from '../mock/users';
+import { normalUserActions } from '../mock/actions';
+import { DatasourceService } from '@src/datasource/datasource.service';
+import datasourceMockService from '../mock/db/datasource-mock';
 
 describe('UsersController', () => {
   let controller: UsersController;
-
-  beforeEach(async () => {
+  const user = {
+    user: userWithNormalRole,
+    actions: normalUserActions.map((action) => action.name),
+  };
+  beforeAll(async () => {
+    vi.restoreAllMocks();
     const module: TestingModule = await Test.createTestingModule({
+      imports: [DatasourceModule],
       controllers: [UsersController],
-      providers: [UsersService],
+      providers: [
+        UsersService,
+        {
+          provide: DatasourceService,
+          useValue: datasourceMockService,
+        },
+      ],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  it('should get information from jwt successfully', () => {
+    const result = controller.getMe(user);
+    expect(result).toBeDefined();
+  });
+
+  it('should update user information successfully', () => {
+    datasourceMockService.user.update.mockResolvedValueOnce({
+      ...user,
+    } as any);
+    const result = controller.updateUser(user, {
+      email: 'user11@test.com',
+      firstName: 'Test',
+      lastName: 'Account',
+    });
+
+    expect(result).toBeDefined();
   });
 });

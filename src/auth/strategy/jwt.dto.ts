@@ -1,4 +1,4 @@
-export type JwtResultPayload = {
+export type JwtValidationResultPayload = {
   user: {
     role: {
       id: string;

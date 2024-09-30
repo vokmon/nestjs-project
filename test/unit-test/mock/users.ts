@@ -4,7 +4,11 @@ export const userWithNormalRole = {
   password: 'test123',
   firstName: 'Test',
   lastName: 'Account',
+  roleId: '2',
   role: {
     id: '2',
+    name: 'User',
+    description: 'Normal user with permissions',
+    actionsIds: ['3', '4'],
   },
 };

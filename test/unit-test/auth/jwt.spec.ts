@@ -6,7 +6,6 @@ import { mockDeep, mockReset } from 'vitest-mock-extended';
 import { userWithNormalRole } from '../mock/users';
 import { normalUserActions } from '../mock/actions';
 import { AuthPayload } from '@src/auth/auth.dto';
-import { JwtResultPayload } from '@src/auth/strategy/jwt.dto';
 
 describe('JwtStrategy', () => {
   let jwtStrategy: JwtStrategy;
@@ -39,7 +38,7 @@ describe('JwtStrategy', () => {
       role: userWithNormalRole.role.id,
     };
 
-    const result = (await jwtStrategy.validate(payload)) as JwtResultPayload;
+    const result = await jwtStrategy.validate(payload);
     expect(result.user).toBeDefined();
     expect(result.actions).toBeDefined();
     expect(result.actions).toHaveLength(2);
@@ -58,7 +57,7 @@ describe('JwtStrategy', () => {
       role: userWithNormalRole.role.id,
     };
 
-    const result = (await jwtStrategy.validate(payload)) as JwtResultPayload;
+    const result = await jwtStrategy.validate(payload);
     expect(result.user).toBeDefined();
     expect(result.actions).toBeDefined();
   });

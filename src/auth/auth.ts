@@ -11,7 +11,7 @@ export class Auth {
   ) {}
 
   getSecretBufferValue = () => {
-    return Buffer.from(this.config.get<string>('AUTH_SECRET') || '', 'utf-8');
+    return Buffer.from(this.config.get<string>('AUTH_SECRET')!, 'utf-8');
   };
 
   getAuthSecretToken = () => {
