@@ -43,17 +43,32 @@ $ bun run start:prod
 ``` 
 
 4. Run tests
-```bash
-# unit tests
-$ bun test:unit
 
-# e2e tests
-$ bun test:e2e
+  4.1 Unit test
 
-# test coverage
-$ bun test:unit --coverage
-$ bun test:e2e --coverage
-```
+    ```bash
+    # unit tests
+    $ bun test:unit
+
+    # test coverage
+    $ bun test:unit --coverage
+    ```
+
+  4.2 E2E test. 
+    Coverage reports cannot be generated for end-to-end tests because the service runs as a web service. API calls are made during testing, preventing the coverage tool from detecting the executed code.
+
+    End-to-end tests should be written based on business logic and test plans. For coverage testing, unit tests should be used instead.
+
+    ```bash
+    # Manually reset E2E test database 
+    $ db:test:reset
+
+    # e2e tests
+    $ bun test:e2e
+
+    # Reset E2E test database, start the e2e test and remove the test-db after finishing the tests
+    $ bun test:e2e-full
+    ```
 
 5. Create module, controller and provider
 ```bash

@@ -33,6 +33,8 @@ export default defineConfig({
         '**/src/datasource', // exclude datasource as unit tests wll always use mock data
       ],
     },
+    // setupFiles: ['test/e2e/e2e-setup.ts'],
+    globalSetup: ['test/e2e/e2e-setup.ts'],
   },
   resolve: {
     alias: {

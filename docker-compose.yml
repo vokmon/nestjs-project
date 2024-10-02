@@ -10,5 +10,15 @@ services:
       POSTGRES_DB: nestjs
     networks:
      - localdev
+  test-db:
+    image: postgres:latest
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: e2e_postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nestjs
+    networks:
+     - localdev
 networks:
   localdev:
