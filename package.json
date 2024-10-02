@@ -23,7 +23,7 @@
     "db:rm": "docker compose rm  -s -f -v",
     "db:up": "docker compose up -d",
     "db:dev:reset": "bun db:rm dev-db && bun db:up dev-db && sleep 2 && bun --env-file=.env.dev prisma:dev:deploy",
-    "db:test:reset": "bun db:rm test-db && bun db:up test-db && sleep 2 && bun --env-file=./test/e2e/config/.env.e2e.test prisma:dev:deploy"
+    "db:test:reset": "bun db:rm test-db && bun db:up test-db && sleep 2 && bun --env-file=./test/e2e/config/.env.e2e.test prisma:dev:deploy && bun --env-file=./test/e2e/config/.env.e2e.test ./test/e2e/config/test-seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.4",

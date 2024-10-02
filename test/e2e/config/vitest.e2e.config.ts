@@ -34,7 +34,7 @@ export default defineConfig({
       ],
     },
     // setupFiles: ['test/e2e/e2e-setup.ts'],
-    globalSetup: ['test/e2e/e2e-setup.ts'],
+    globalSetup: ['test/e2e/config/e2e-setup.ts'],
   },
   resolve: {
     alias: {

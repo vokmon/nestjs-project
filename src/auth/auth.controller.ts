@@ -35,6 +35,7 @@ export class AuthController {
   }
 
   @Post('get-token')
+  @HttpCode(HttpStatus.OK)
   @UsePipes(new ZodValidationPipe(tokenInformationSchema))
   getTokenByRefreshToken(@Body() tokenInformation: TokenInformation) {
     return this.authService.getTokenByRefreshToken(tokenInformation);

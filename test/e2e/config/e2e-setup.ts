@@ -3,10 +3,9 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '@src/app.module';
 import type { GlobalSetupContext } from 'vitest/node';
+import { userWithNormalRole } from '../mock/data/users';
 
 let app: INestApplication;
-let accessTokenAdmin: string;
-
 const TEST_PORT = 5001;
 const TEST_HOSTNAME = '0.0.0.0';
 
@@ -19,16 +18,25 @@ export async function setup({ provide }: GlobalSetupContext) {
   await app.init();
 
   // Perform signin and get access token
-  const response = await request(app.getHttpServer())
-    .post('/auth/signin')
-    .send({ email: 'admin@system.com', password: 'test_admin' })
-    .expect(200);
+  const adminSigninPromise = signin(
+    process.env.INITIAL_ADMIN_USER,
+    process.env.INITIAL_ADMIN_PASSWORD,
+  );
 
-  accessTokenAdmin = response.body.access_token;
+  const userSigninPromise = signin(
+    userWithNormalRole.email,
+    userWithNormalRole.password,
+  );
+
+  const [adminSigninToken, userSigninToken] = await Promise.all([
+    adminSigninPromise,
+    userSigninPromise,
+  ]);
 
   await app.listen(TEST_PORT, TEST_HOSTNAME);
   const url = await app.getUrl();
-  provide('accessTokenAdmin', accessTokenAdmin);
+  provide('accessTokenAdmin', adminSigninToken);
+  provide('accessTokenUser', userSigninToken);
   provide('url', url);
 
   return async () => {
@@ -38,9 +46,18 @@ export async function setup({ provide }: GlobalSetupContext) {
   };
 }
 
+const signin = async (email: string, password: string): Promise<string> => {
+  const response = await request(app.getHttpServer())
+    .post('/auth/signin')
+    .send({ email, password })
+    .expect(200);
+  return response.body.access_token;
+};
+
 declare module 'vitest' {
   export interface ProvidedContext {
     accessTokenAdmin: string;
+    accessTokenUser: string;
     url: string;
   }
 }

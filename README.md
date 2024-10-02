@@ -54,7 +54,9 @@ $ bun run start:prod
     $ bun test:unit --coverage
     ```
 
-  4.2 E2E test. 
+  4.2 E2E test.
+    To simulate real-world conditions, end-to-end tests starts the service only once. Unit tests can then make HTTP calls to closely replicate actual API interactions.
+
     Coverage reports cannot be generated for end-to-end tests because the service runs as a web service. API calls are made during testing, preventing the coverage tool from detecting the executed code.
 
     End-to-end tests should be written based on business logic and test plans. For coverage testing, unit tests should be used instead.
