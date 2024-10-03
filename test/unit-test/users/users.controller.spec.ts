@@ -48,4 +48,9 @@ describe('UsersController', () => {
 
     expect(result).toBeDefined();
   });
+
+  it('should get data with permission successfully', () => {
+    const result = controller.getDataWithPermission();
+    expect(result).toEqual('Success!');
+  });
 });

@@ -1,9 +1,12 @@
 import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { JwtGuard } from '@src/auth/guards';
+import { JwtGuard } from '@src/guards';
 import { GetUser } from '@src/decorators';
 import { JwtValidationResultPayload } from '@src/auth/strategy/jwt.dto';
 import { UpdateUserDto } from './dto';
+import { Actions } from '@src/decorators/actions.decorator';
+import { ActionsGuard } from '@src/guards/actions.guard';
+import { ACTION_USER_READ } from '@src/permissions/actions';
 
 @Controller('users')
 export class UsersController {
@@ -22,5 +25,12 @@ export class UsersController {
     @Body() dto: UpdateUserDto,
   ) {
     return this.usersService.updateUser(userData.user.id, dto);
+  }
+
+  @UseGuards(JwtGuard, ActionsGuard)
+  @Actions([ACTION_USER_READ.name])
+  @Get('admin')
+  getDataWithPermission() {
+    return 'Success!';
   }
 }
