@@ -39,4 +39,20 @@ describe('Users controller (e2e)', () => {
 
     expect(response.body).toEqual(expect.objectContaining({ ...toUpdate }));
   });
+
+  it('admin should be able to access the admin resource', async () => {
+    const response = await request(url)
+      .get('/users/admin')
+      .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${inject('accessTokenAdmin')}`)
+      .expect(HttpStatus.OK);
+  });
+
+  it('user should not be able to access the admin resource', async () => {
+    const response = await request(url)
+      .get('/users/admin')
+      .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${inject('accessTokenUser')}`)
+      .expect(HttpStatus.FORBIDDEN);
+  });
 });
