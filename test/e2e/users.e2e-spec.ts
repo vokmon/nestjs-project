@@ -41,7 +41,7 @@ describe('Users controller (e2e)', () => {
   });
 
   it('admin should be able to access the admin resource', async () => {
-    const response = await request(url)
+    await request(url)
       .get('/users/admin')
       .set('Accept', 'application/json')
       .set('Authorization', `Bearer ${inject('accessTokenAdmin')}`)
@@ -49,7 +49,7 @@ describe('Users controller (e2e)', () => {
   });
 
   it('user should not be able to access the admin resource', async () => {
-    const response = await request(url)
+    await request(url)
       .get('/users/admin')
       .set('Accept', 'application/json')
       .set('Authorization', `Bearer ${inject('accessTokenUser')}`)

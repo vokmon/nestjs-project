@@ -1,7 +1,14 @@
 import { HttpStatus } from '@nestjs/common';
 import request from 'supertest';
 import { inject } from 'vitest';
-import { user, user2 } from './mock/data/users';
+
+const users = ['01', '02'].map((index: string) => ({
+  email: `user_${new Date().getTime()}_${index}@test.com`,
+  password: 'test123',
+  firstName: 'Test',
+  lastName: 'Account',
+}));
+const [user, user2] = users;
 
 describe('Authentication signup workflow (e2e)', () => {
   let url: string;

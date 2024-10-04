@@ -12,17 +12,3 @@ export const userWithNormalRole = {
     actionsIds: ['3', '4'],
   },
 };
-
-export const user = {
-  email: 'user01@test.com',
-  password: 'test123',
-  firstName: 'Test',
-  lastName: 'Account',
-};
-
-export const user2 = {
-  email: 'user02@test.com',
-  password: 'test123',
-  firstName: 'Test',
-  lastName: 'Account',
-};
