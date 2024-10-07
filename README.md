@@ -83,6 +83,9 @@ $ nest g controller controller_name
 # Create provider
 $ nest g module provider_name
 
+# Create resource
+$ nest g module resource_name
+
 ```
 
 6. To create a resource that will automatically add module, controller and provider

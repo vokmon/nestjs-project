@@ -2,6 +2,7 @@ import {
   PipeTransform,
   ArgumentMetadata,
   BadRequestException,
+  UsePipes,
 } from '@nestjs/common';
 import { ZodError, ZodSchema } from 'zod';
 
@@ -15,6 +16,9 @@ export class ZodValidationPipe implements PipeTransform {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   transform(value: unknown, metadata: ArgumentMetadata) {
+    if(metadata.type !== 'body') {
+      return value;
+    }
     try {
       const parsedValue = this.schema.parse(value);
       return parsedValue;
@@ -38,3 +42,5 @@ export class ZodValidationPipe implements PipeTransform {
     }
   }
 }
+
+export const ZodValidate = (schema: ZodSchema) => UsePipes(new ZodValidationPipe(schema));

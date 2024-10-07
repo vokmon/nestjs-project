@@ -84,8 +84,8 @@ model Bookmark {
   updatedAt   DateTime @updatedAt
 
   createdById String
-  createdBy   User   @relation("userCreatedBookmarkBy", fields: [createdById], references: [id])
+  createdBy   User?   @relation("userCreatedBookmarkBy", fields: [createdById], references: [id])
 
   updatedById String
-  updatedBy   User   @relation("userUpdatedBookmarkBy", fields: [updatedById], references: [id])
+  updatedBy   User?   @relation("userUpdatedBookmarkBy", fields: [updatedById], references: [id])
 }

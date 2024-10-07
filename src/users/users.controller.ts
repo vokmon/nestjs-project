@@ -3,10 +3,11 @@ import { UsersService } from './users.service';
 import { JwtGuard } from '@src/guards';
 import { GetUser } from '@src/decorators';
 import { JwtValidationResultPayload } from '@src/auth/strategy/jwt.dto';
-import { UpdateUserDto } from './dto';
+import { UpdateUserDto, updateUserSchema } from './dto';
 import { Actions } from '@src/decorators/actions.decorator';
 import { ActionsGuard } from '@src/guards/actions.guard';
 import { ACTION_USER_READ } from '@src/permissions/actions';
+import { ZodValidate } from '@src/pipes/zod-validation-pipe';
 
 @Controller('users')
 export class UsersController {
@@ -20,6 +21,7 @@ export class UsersController {
 
   @UseGuards(JwtGuard)
   @Patch('me')
+  @ZodValidate(updateUserSchema)
   updateUser(
     @GetUser() userData: JwtValidationResultPayload,
     @Body() dto: UpdateUserDto,
