@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Actions } from '../decorators/actions.decorator';
+import { ActionPermissions } from '../decorators/actions-permissions.decorator';
 import { JwtValidationResultPayload } from '@src/auth/strategy/jwt.dto';
 import { ACTION_ALL } from '@src/permissions/actions';
 
@@ -9,7 +9,7 @@ export class ActionsGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const actions = this.reflector.get(Actions, context.getHandler());
+    const actions = this.reflector.get(ActionPermissions, context.getHandler());
     if (!actions) {
       return false;
     }

@@ -1,27 +1,27 @@
 import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Actions } from '@src/decorators/actions.decorator';
+import { ActionPermissions } from '@src/decorators/actions-permissions.decorator';
 import { ActionsGuard } from '@src/guards/actions.guard';
 import { ACTION_ALL } from '@src/permissions/actions';
 import { vi } from 'vitest';
 
 describe('Action Decorator', () => {
   it('should set metadata on a class', () => {
-    @Actions(['read', 'write'])
+    @ActionPermissions(['read', 'write'])
     class TestClass {}
 
-    const actions = Reflect.getMetadata(Actions.KEY, TestClass);
+    const actions = Reflect.getMetadata(ActionPermissions.KEY, TestClass);
     expect(actions).toEqual(['read', 'write']);
   });
 
   it('should set metadata on a method', () => {
     class TestClass {
-      @Actions(['update', 'delete'])
+      @ActionPermissions(['update', 'delete'])
       testMethod() {}
     }
 
     const actions = Reflect.getMetadata(
-      Actions.KEY,
+      ActionPermissions.KEY,
       TestClass.prototype.testMethod,
     );
     expect(actions).toEqual(['update', 'delete']);
@@ -33,26 +33,26 @@ describe('Action Decorator', () => {
     }
 
     const actions = Reflect.getMetadata(
-      Actions.KEY,
+      ActionPermissions.KEY,
       TestClass.prototype.testMethod,
     );
     expect(actions).toBeUndefined();
   });
 
   it('should allow empty array as input', () => {
-    @Actions([])
+    @ActionPermissions([])
     class TestClass {}
 
-    const actions = Reflect.getMetadata(Actions.KEY, TestClass);
+    const actions = Reflect.getMetadata(ActionPermissions.KEY, TestClass);
     expect(actions).toEqual([]);
   });
 
   it('should not overwrite metadata when decorator is used multiple times', () => {
-    @Actions(['read'])
-    @Actions(['write'])
+    @ActionPermissions(['read'])
+    @ActionPermissions(['write'])
     class TestClass {}
 
-    const actions = Reflect.getMetadata(Actions.KEY, TestClass);
+    const actions = Reflect.getMetadata(ActionPermissions.KEY, TestClass);
     expect(actions).toEqual(['read']);
   });
 });

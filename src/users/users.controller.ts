@@ -4,7 +4,7 @@ import { JwtGuard } from '@src/guards';
 import { GetUser } from '@src/decorators';
 import { JwtValidationResultPayload } from '@src/auth/strategy/jwt.dto';
 import { UpdateUserDto, updateUserSchema } from './dto';
-import { Actions } from '@src/decorators/actions.decorator';
+import { ActionPermissions } from '@src/decorators/actions-permissions.decorator';
 import { ActionsGuard } from '@src/guards/actions.guard';
 import { ACTION_USER_READ } from '@src/permissions/actions';
 import { ZodValidate } from '@src/pipes/zod-validation-pipe';
@@ -30,7 +30,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtGuard, ActionsGuard)
-  @Actions([ACTION_USER_READ.name])
+  @ActionPermissions([ACTION_USER_READ.name])
   @Get('admin')
   getDataWithPermission() {
     return 'Success!';
