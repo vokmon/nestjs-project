@@ -13,7 +13,7 @@ export class BookmarksService {
 
   // Admin methods
   async findAll() {
-    return this.datasourceService.bookmark.findMany({
+    return await this.datasourceService.bookmark.findMany({
       include: { createdBy: false, updatedBy: false },
     });
   }
@@ -30,7 +30,7 @@ export class BookmarksService {
 
   async create(createBookmarkDto: CreateBookmarkDto, userId: string) {
     try {
-      return this.datasourceService.bookmark.create({
+      return await this.datasourceService.bookmark.create({
         data: {
           name: createBookmarkDto.name,
           link: createBookmarkDto.link,
@@ -56,8 +56,7 @@ export class BookmarksService {
     userId: string,
   ) {
     try {
-      await this.findOne(id);
-      return this.datasourceService.bookmark.update({
+      return await this.datasourceService.bookmark.update({
         where: { id },
         data: { ...updateBookmarkDto, updatedById: userId },
       });
@@ -103,7 +102,6 @@ export class BookmarksService {
     bookmarkId: string,
     updateBookmarkDto: UpdateBookmarkDto,
   ) {
-    await this.findOneForUser(userId, bookmarkId);
     return this.update(bookmarkId, updateBookmarkDto, userId);
   }
 }

@@ -11,4 +11,5 @@ export const userWithNormalRole = {
     description: 'Normal user with permissions',
     actionsIds: ['3', '4'],
   },
+  
 };
