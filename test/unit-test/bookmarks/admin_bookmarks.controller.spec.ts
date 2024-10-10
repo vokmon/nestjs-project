@@ -34,7 +34,6 @@ describe('AdminBookmarksController', () => {
   });
 
   it('should be defined', () => {
-    console.log(1111);
     expect(controller).toBeDefined();
   });
 

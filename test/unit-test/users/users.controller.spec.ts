@@ -36,21 +36,18 @@ describe('UsersController', () => {
     expect(result).toBeDefined();
   });
 
-  it('should update user information successfully', () => {
-    datasourceMockService.user.update.mockResolvedValueOnce({
-      ...user,
-    } as any);
-    const result = controller.updateUser(user, {
+  it('should update user information successfully', async () => {
+    const result = await controller.updateUser(user, {
       email: 'user11@test.com',
       firstName: 'Test',
       lastName: 'Account',
     });
 
-    expect(result).toBeDefined();
+    expect(datasourceMockService.user.update).toHaveBeenCalledOnce();
   });
 
-  it('should get data with permission successfully', () => {
-    const result = controller.getDataWithPermission();
+  it('should get data with permission successfully', async () => {
+    const result = await controller.getDataWithPermission();
     expect(result).toEqual('Success!');
   });
 });

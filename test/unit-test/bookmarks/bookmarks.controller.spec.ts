@@ -39,6 +39,7 @@ describe('BookmarksController', () => {
 
   it('should return bookmarks for the user', async () => {
     await controller.findAll(userData);
+    datasourceMockService.bookmark.findMany.mockResolvedValueOnce([]);
     expect(datasourceMockService.bookmark.findMany).toHaveBeenCalledOnce();
   });
 
