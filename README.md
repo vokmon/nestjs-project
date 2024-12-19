@@ -84,7 +84,7 @@ $ nest g controller controller_name
 $ nest g module provider_name
 
 # Create resource
-$ nest g module resource_name
+$ nest g resource resource_name
 
 ```
 
